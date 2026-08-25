@@ -17,42 +17,42 @@ const getBasePayload = () => ({
 // INITIALIZATION
 // ============================================
 export const initializeDevice = (data) => {
-  return axiosInstance.post('/api/initializer/selectInitInfo', data);
+  return axiosInstance.post(ENDPOINTS.INITIALIZE, data); // Add to endpoints.js
 };
 
 // ============================================
 // BASIC DATA MANAGEMENT
 // ============================================
 export const getCodeList = (lastReqDt = '20200101000000') => {
-  return axiosInstance.post('/api/data/code/selectCodes', {
+  return axiosInstance.post(ENDPOINTS.GET_CODE_LIST, {
     ...getBasePayload(),
     lastReqDt
   });
 };
 
 export const getItemClassifications = (lastReqDt = '20200101000000') => {
-  return axiosInstance.post('/api/data/itemClass/selectItemsClass', {
+  return axiosInstance.post(ENDPOINTS.GET_ITEM_CLASSIFICATIONS, {
     ...getBasePayload(),
     lastReqDt
   });
 };
 
 export const getCustomerByPin = (custmTin) => {
-  return axiosInstance.post('/api/customers/selectCustomer', {
+  return axiosInstance.post(ENDPOINTS.GET_CUSTOMER_BY_PIN, {
     ...getBasePayload(),
     custmTin
   });
 };
 
 export const getBranchesFromVSCU = (lastReqDt = '20200101000000') => {
-  return axiosInstance.post('/api/branches/selectBranches', {
+  return axiosInstance.post(ENDPOINTS.GET_BRANCHES_FROM_VSCU, {
     ...getBasePayload(),
     lastReqDt
   });
 };
 
 export const getNotices = (lastReqDt = '20200101000000') => {
-  return axiosInstance.post('/api/notices/selectNotices', {
+  return axiosInstance.post(ENDPOINTS.GET_NOTICES, {
     ...getBasePayload(),
     lastReqDt
   });
@@ -62,21 +62,21 @@ export const getNotices = (lastReqDt = '20200101000000') => {
 // BRANCH INFORMATION MANAGEMENT
 // ============================================
 export const saveBranchCustomer = (data) => {
-  return axiosInstance.post('/api/branches/saveBrancheCustomers', {
+  return axiosInstance.post(ENDPOINTS.SAVE_BRANCH_CUSTOMER, {
     ...getBasePayload(),
     ...data
   });
 };
 
 export const saveBranchUser = (data) => {
-  return axiosInstance.post('/api/branches/saveBrancheUsers', {
+  return axiosInstance.post(ENDPOINTS.SAVE_BRANCH_USER, {
     ...getBasePayload(),
     ...data
   });
 };
 
 export const saveBranchInsurance = (data) => {
-  return axiosInstance.post('/api/branches/saveBrancheInsurances', {
+  return axiosInstance.post(ENDPOINTS.SAVE_BRANCH_INSURANCE, {
     ...getBasePayload(),
     ...data
   });
@@ -110,25 +110,25 @@ export const bulkImportItems = (items) => {
 };
 
 export const getItemsFromVSCU = (lastReqDt = '20200101000000') => {
-  return axiosInstance.post('/api/items/selectItems', {
+  return axiosInstance.post(ENDPOINTS.GET_ITEMS_FROM_VSCU, {
     ...getBasePayload(),
     lastReqDt
   });
 };
 
 export const getItemInfo = (data) => {
-  return axiosInstance.post('/api/items/selectItems', data);
+  return axiosInstance.post(ENDPOINTS.GET_ITEMS_FROM_VSCU, data);
 };
 
 export const sendItem = (data) => {
-  return axiosInstance.post('/api/items/saveItems', {
+  return axiosInstance.post(ENDPOINTS.SEND_ITEM, {
     ...getBasePayload(),
     ...data
   });
 };
 
 export const sendItemComposition = (data) => {
-  return axiosInstance.post('/api/items/saveItemComposition', {
+  return axiosInstance.post(ENDPOINTS.SEND_ITEM_COMPOSITION, {
     ...getBasePayload(),
     ...data
   });
@@ -146,7 +146,7 @@ export const updateImportItems = (data) => {
 };
 
 export const getImportItemsFromVSCU = (lastReqDt = '20190524000000') => {
-  return axiosInstance.post('/api/imports/selectImportItems', {
+  return axiosInstance.post(ENDPOINTS.GET_IMPORT_ITEMS_FROM_VSCU, {
     ...getBasePayload(),
     lastReqDt
   });
@@ -164,7 +164,7 @@ export const savePurchase = (data) => {
 };
 
 export const getPurchasesFromVSCU = (lastReqDt = '20200101000000') => {
-  return axiosInstance.post('/api/purchases/selectTrnsPurchaseSales', {
+  return axiosInstance.post(ENDPOINTS.GET_PURCHASES_FROM_VSCU, {
     ...getBasePayload(),
     lastReqDt
   });
@@ -220,18 +220,18 @@ export const getLowStockAlerts = () => {
 };
 
 export const syncStockToVSCU = () => {
-  return axiosInstance.post('/api/stock/sync');
+  return axiosInstance.post(ENDPOINTS.SYNC_STOCK);
 };
 
 export const getStockFromVSCU = (lastReqDt = '20200101000000') => {
-  return axiosInstance.post('/api/stock/selectStockItems', {
+  return axiosInstance.post(ENDPOINTS.GET_STOCK_FROM_VSCU, {
     ...getBasePayload(),
     lastReqDt
   });
 };
 
 export const saveStockMaster = (itemCd, rsdQty) => {
-  return axiosInstance.post('/api/stock/stockMaster/saveStockMaster', {
+  return axiosInstance.post(ENDPOINTS.SAVE_STOCK_MASTER, {
     ...getBasePayload(),
     itemCd,
     rsdQty,
@@ -312,7 +312,7 @@ export const autoSync = () => {
 // ============================================
 export const checkVSCUStatus = async () => {
   try {
-    const response = await axiosInstance.get('/api/vscu/status');
+    const response = await axiosInstance.get(ENDPOINTS.VSCU_STATUS);
     return { data: { online: response.data?.online || false } };
   } catch (error) {
     console.error('VSCU status check failed:', error);
@@ -343,17 +343,17 @@ export const loginUser = (credentials) => {
 // REPORTS
 // ============================================
 export const getXReport = () => {
-  return axiosInstance.get('/api/reports/x-report');
+  return axiosInstance.get(ENDPOINTS.X_REPORT);
 };
 
 export const getZReport = () => {
-  return axiosInstance.get('/api/reports/z-report');
+  return axiosInstance.get(ENDPOINTS.Z_REPORT);
 };
 
 export const getItemReport = (params) => {
-  return axiosInstance.get('/api/reports/items', { params });
+  return axiosInstance.get(ENDPOINTS.ITEM_REPORT, { params });
 };
 
 export const getTaxReport = (params) => {
-  return axiosInstance.get('/api/reports/tax', { params });
+  return axiosInstance.get(ENDPOINTS.TAX_REPORT, { params });
 };
