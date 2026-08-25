@@ -45,6 +45,29 @@ const ENDPOINTS = {
   GET_USERS: `${API_BASE}/users`,
   CREATE_USER: `${API_BASE}/users`,
   DELETE_USER: `${API_BASE}/users`,
+
+  // ===== NEW VSCU ENDPOINTS =====
+  INITIALIZE: `${API_BASE}/initializer/selectInitInfo`,
+  GET_CODE_LIST: `${API_BASE}/data/code/selectCodes`,
+  GET_ITEM_CLASSIFICATIONS: `${API_BASE}/data/itemClass/selectItemsClass`,
+  GET_CUSTOMER_BY_PIN: `${API_BASE}/customers/selectCustomer`,
+  GET_BRANCHES_FROM_VSCU: `${API_BASE}/branches/selectBranches`,
+  GET_NOTICES: `${API_BASE}/notices/selectNotices`,
+  SAVE_BRANCH_CUSTOMER: `${API_BASE}/branches/saveBrancheCustomers`,
+  SAVE_BRANCH_USER: `${API_BASE}/branches/saveBrancheUsers`,
+  SAVE_BRANCH_INSURANCE: `${API_BASE}/branches/saveBrancheInsurances`,
+  GET_ITEMS_FROM_VSCU: `${API_BASE}/items/selectItems`,
+  SEND_ITEM: `${API_BASE}/items/saveItems`,
+  SEND_ITEM_COMPOSITION: `${API_BASE}/items/saveItemComposition`,
+  GET_IMPORT_ITEMS_FROM_VSCU: `${API_BASE}/imports/selectImportItems`,
+  GET_PURCHASES_FROM_VSCU: `${API_BASE}/purchases/selectTrnsPurchaseSales`,
+  SYNC_STOCK: `${API_BASE}/stock/sync`,
+  GET_STOCK_FROM_VSCU: `${API_BASE}/stock/selectStockItems`,
+  SAVE_STOCK_MASTER: `${API_BASE}/stock/stockMaster/saveStockMaster`,
+  X_REPORT: `${API_BASE}/reports/x-report`,
+  Z_REPORT: `${API_BASE}/reports/z-report`,
+  ITEM_REPORT: `${API_BASE}/reports/items`,
+  TAX_REPORT: `${API_BASE}/reports/tax`,
 };
 
 export default ENDPOINTS;
