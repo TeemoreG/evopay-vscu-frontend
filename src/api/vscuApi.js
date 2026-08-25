@@ -31,7 +31,7 @@ export const getCodeList = (lastReqDt = '20200101000000') => {
 };
 
 export const getItemClassifications = (lastReqDt = '20200101000000') => {
-  return axiosInstance.post('/data/itemClass/selectItemsClass', {
+  return axiosInstance.post('/api/data/itemClass/selectItemsClass', {
     ...getBasePayload(),
     lastReqDt
   });
@@ -109,7 +109,6 @@ export const bulkImportItems = (items) => {
   return axiosInstance.post(`${ENDPOINTS.GET_ITEMS}/bulk`, items);
 };
 
-// Get items from VSCU
 export const getItemsFromVSCU = (lastReqDt = '20200101000000') => {
   return axiosInstance.post('/api/items/selectItems', {
     ...getBasePayload(),
@@ -121,7 +120,6 @@ export const getItemInfo = (data) => {
   return axiosInstance.post('/api/items/selectItems', data);
 };
 
-// Send item to VSCU - FIXED: uses /api/items/saveItems
 export const sendItem = (data) => {
   return axiosInstance.post('/api/items/saveItems', {
     ...getBasePayload(),
@@ -129,7 +127,6 @@ export const sendItem = (data) => {
   });
 };
 
-// Send item composition
 export const sendItemComposition = (data) => {
   return axiosInstance.post('/api/items/saveItemComposition', {
     ...getBasePayload(),
@@ -140,18 +137,14 @@ export const sendItemComposition = (data) => {
 // ============================================
 // IMPORTS
 // ============================================
-
-// Get imports from local database
 export const getLocalImportItems = () => {
   return axiosInstance.get(ENDPOINTS.GET_IMPORT_ITEMS);
 };
 
-// Update/confirm import match
 export const updateImportItems = (data) => {
   return axiosInstance.post(ENDPOINTS.UPDATE_IMPORT_ITEMS, data);
 };
 
-// Get imports from VSCU (with payload)
 export const getImportItemsFromVSCU = (lastReqDt = '20190524000000') => {
   return axiosInstance.post('/api/imports/selectImportItems', {
     ...getBasePayload(),
@@ -315,7 +308,7 @@ export const autoSync = () => {
 };
 
 // ============================================
-// VSCU STATUS - FIXED: Check VSCU via backend proxy
+// VSCU STATUS
 // ============================================
 export const checkVSCUStatus = async () => {
   try {
