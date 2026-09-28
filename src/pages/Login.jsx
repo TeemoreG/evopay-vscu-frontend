@@ -20,7 +20,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-     const response = await axiosInstance.post('api/users/login', {
+      const response = await axiosInstance.post('/api/users/login', {
         username,
         password
       });
@@ -28,7 +28,7 @@ const Login = () => {
       if (response.data && response.data.success) {
         const userData = response.data.user;
         const tin = import.meta.env.VITE_VSCU_TIN;
-        const bhfId = import.meta.env.VITE_VSCU_BHF_ID ;
+        const bhfId = import.meta.env.VITE_VSCU_BHF_ID;
         const cmcKey = localStorage.getItem('cmcKey') || 'local-dev-key';
 
         login(tin, bhfId, null, cmcKey, {
@@ -54,9 +54,9 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-[#f5f6fa] p-4">
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md border border-gray-100">
         <div className="text-center mb-8">
-          <img 
-            src={evopayLogo} 
-            alt="Evopay" 
+          <img
+            src={evopayLogo}
+            alt="Evopay"
             className="h-16 mx-auto object-contain"
             onError={(e) => {
               e.target.style.display = 'none';

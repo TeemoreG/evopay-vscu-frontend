@@ -38,7 +38,7 @@ const ENDPOINTS = {
   SYNC_STATUS: `${API_BASE}/sync/status`,
   
   // VSCU
-  VSCU_STATUS: `${API_BASE}/health`,
+  VSCU_STATUS: `${API_BASE}/vscu/status`,
 
   // Users 
   LOGIN: `${API_BASE}/users/login`,
