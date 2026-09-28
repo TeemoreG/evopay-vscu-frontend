@@ -182,8 +182,18 @@ export const saveSales = (data) => {
   return axiosInstance.post(ENDPOINTS.SAVE_SALES, data);
 };
 
-export const getSales = (params) => {
-  return axiosInstance.get(ENDPOINTS.SAVE_SALES, { params });
+export const getSales = async (params) => {
+  const res = await axiosInstance.get(ENDPOINTS.SAVE_SALES, { params });
+  // Guarantee array shape regardless of backend response
+  const raw = res.data;
+  res.data = Array.isArray(raw)
+    ? raw
+    : Array.isArray(raw?.sales)
+      ? raw.sales
+      : Array.isArray(raw?.data)
+        ? raw.data
+        : [];
+  return res;
 };
 
 export const getSale = (id) => {

@@ -48,7 +48,7 @@ const Sales = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Keyboard shortcut: F1 = New Sale
+  // F1 = New Sale, Esc = close form
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'F1') {
@@ -63,11 +63,19 @@ const Sales = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, [showForm]);
 
+  // Fetch sales — guard against non-array responses
   const fetchSales = async () => {
     try {
       setLoading(true);
       const response = await getSales();
-      setSales(response.data || []);
+      const data = response?.data;
+      setSales(
+        Array.isArray(data)
+          ? data
+          : Array.isArray(data?.sales)
+            ? data.sales
+            : []
+      );
     } catch (error) {
       console.error('Failed to fetch sales:', error);
       setSales([]);
@@ -180,7 +188,8 @@ const Sales = () => {
         totRcptNo: response?.data?.vscuResponse?.data?.totRcptNo || '1',
       };
 
-      let savedSale = sales.find((s) => s.invoice_no === newSale.invoice_no);
+      const salesArr = Array.isArray(sales) ? sales : [];
+      let savedSale = salesArr.find((s) => s.invoice_no === newSale.invoice_no);
       if (!savedSale && response?.data?.sale) {
         savedSale = response.data.sale;
       }
@@ -231,8 +240,9 @@ const Sales = () => {
     }
   };
 
+  // Filter — always operate on a real array
   const getFilteredSales = () => {
-    let filtered = sales;
+    let filtered = Array.isArray(sales) ? sales : [];
 
     if (searchTerm) {
       filtered = filtered.filter(
@@ -376,16 +386,18 @@ const Sales = () => {
 
   const filteredSales = getFilteredSales();
 
+  // Stats — always safe (sales guaranteed array)
+  const salesArr = Array.isArray(sales) ? sales : [];
   const stats = {
-    total: sales.length,
-    completed: sales.filter((s) => s.status === 'Completed').length,
-    pending: sales.filter((s) => s.status === 'Pending').length,
-    revenue: sales.filter((s) => s.status === 'Completed').reduce((sum, s) => sum + (s.total || 0), 0),
-    totalTax: sales.filter((s) => s.status === 'Completed').reduce((sum, s) => sum + (s.tax || 0), 0),
+    total: salesArr.length,
+    completed: salesArr.filter((s) => s.status === 'Completed').length,
+    pending: salesArr.filter((s) => s.status === 'Pending').length,
+    revenue: salesArr.filter((s) => s.status === 'Completed').reduce((sum, s) => sum + (s.total || 0), 0),
+    totalTax: salesArr.filter((s) => s.status === 'Completed').reduce((sum, s) => sum + (s.tax || 0), 0),
   };
 
   const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Nairobi' });
-  const todaySales = sales.filter(s => (s.date || '').slice(0, 10) === todayStr);
+  const todaySales = salesArr.filter(s => (s.date || '').slice(0, 10) === todayStr);
   const todayRevenue = todaySales.filter(s => s.status === 'Completed').reduce((sum, s) => sum + (s.total || 0), 0);
 
   const timeStr = now.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -393,7 +405,7 @@ const Sales = () => {
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
 
-      {/* Hidden logo for PDF generation */}
+      {/* Hidden logo for PDF */}
       <img src="/evopay-logo.png" alt="Evopay Logo" className="hidden" onError={(e) => (e.target.style.display = 'none')} />
 
       {/* ============ POS HEADER ============ */}
@@ -587,9 +599,9 @@ const Sales = () => {
           </div>
         )}
 
-        {filteredSales.length !== sales.length && (
+        {filteredSales.length !== salesArr.length && (
           <p className="text-xs text-slate-400 px-1">
-            Showing <strong className="text-slate-600">{filteredSales.length}</strong> of {sales.length}
+            Showing <strong className="text-slate-600">{filteredSales.length}</strong> of {salesArr.length}
           </p>
         )}
 
