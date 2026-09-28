@@ -31,3 +31,5 @@ dist-ssr
 # Binaries / archives
 backend.rar
 logdy.exe*
+# Backend is its own repo
+backend/
