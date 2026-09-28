@@ -19,8 +19,8 @@ import { useAuth } from '../context/AuthContext';
 // Helper to map item to VSCU payload format
 const mapItemToVSCUPayload = (item) => {
   return {
-    tin: item.tin || '',
-    bhfId: item.bhfId || '00',
+    tin: item.tin || import.meta.env.VITE_VSCU_TIN,
+    bhfId: item.bhfId || import.meta.env.VITE_VSCU_BHF_ID,
     itemCd: item.itemCd || item.item_cd,
     itemClsCd: item.itemClsCd || item.item_cls_cd || '5059690809',
     itemTyCd: item.itemTyCd || '1',
@@ -311,14 +311,12 @@ const ItemCompositionModal = ({ isOpen, onClose, onSend, selectedItem, items }) 
     // Send each new composition
     for (const comp of compositionItems) {
       const payload = {
-        tin: selectedItem?.tin || '',
-        bhfId: selectedItem?.bhfId || '00',
-        itemCd: parentCode,
-        cpstItemCd: comp.cpstItemCd,
-        cpstQty: parseInt(comp.cpstQty),
-        regrId: 'Admin',
-        regrNm: 'Admin'
-      };
+    itemCd: parentCode,
+    cpstItemCd: comp.cpstItemCd,
+    cpstQty: parseInt(comp.cpstQty),
+    regrId: 'Admin',
+    regrNm: 'Admin'
+  };
       try {
         await onSend(payload);
         success++;
@@ -617,15 +615,16 @@ const syncItemsFromVSCU = async () => {
     const lastSync = settingsRes.data?.items_last_sync || '20200101000000';
     
     const payload = {
-      tin: user?.tin || '',
-      bhfId: user?.bhfId || '00',
+      tin: import.meta.env.VITE_VSCU_TIN,
+      bhfId: import.meta.env.VITE_VSCU_BHF_ID,
       lastReqDt: lastSync
     };
 
+    console.log('Syncing items with payload:', payload);
     const response = await getItemInfo(payload);
     
-    if (response.data && response.data.items) {
-      const vscuItems = response.data.items;
+   if (response.data?.resultCd === '000' && response.data?.data?.itemList) {
+  const vscuItems = response.data.data.itemList;
       
       for (const item of vscuItems) {
         await saveItem(item);
@@ -649,16 +648,19 @@ const syncItemsFromVSCU = async () => {
 
 // VSCU: Send Item Information
 const handleSendItemToVSCU = async (item) => {
-  if (!item || !item.itemCd || !item.itemCd.trim()) {
-    console.warn('Skipping VSCU sync - item missing itemCd:', item);
+  const code = item?.itemCd || item?.item_cd;
+  const name = item?.itemNm || item?.item_name;
+
+  if (!item || !code || !String(code).trim()) {
+    console.warn('Skipping VSCU sync - item missing itemCd/item_cd:', item);
     return;
   }
-  
-  if (!item.itemNm || !item.itemNm.trim()) {
-    console.warn('Skipping VSCU sync - item missing itemNm:', item);
+
+  if (!name || !String(name).trim()) {
+    console.warn('Skipping VSCU sync - item missing itemNm/item_name:', item);
     return;
   }
-  
+
   if (!vscuOnline) {
     toast.info('VSCU offline. Item will be queued for sync.');
     return;
@@ -667,18 +669,19 @@ const handleSendItemToVSCU = async (item) => {
   try {
     const payload = mapItemToVSCUPayload({
       ...item,
-      tin: user?.tin || '',
-      bhfId: user?.bhfId || '00'
+      tin: import.meta.env.VITE_VSCU_TIN,
+      bhfId: import.meta.env.VITE_VSCU_BHF_ID
     });
 
+    console.log('Sending item to VSCU:', payload);
     await sendItem(payload);
-    toast.success(`Item ${item.itemCd} sent to VSCU`);
-    
+    toast.success(`Item ${code} sent to VSCU`);
+
     await saveItem({ ...item, synced: 1 });
     await fetchItems();
   } catch (error) {
     console.error('Send item to VSCU failed:', error);
-    toast.warning(`Item ${item.itemCd} saved locally but VSCU sync failed. Will retry later.`);
+    toast.warning(`Item ${code} saved locally but VSCU sync failed. Will retry later.`);
     await saveItem({ ...item, synced: 0 });
     throw error;
   }
@@ -694,8 +697,8 @@ const handleSendComposition = async (payload) => {
   try {
     const fixedPayload = {
       ...payload,
-      tin: user?.tin || import.meta.env.VITE_VSCU_TIN || '',
-      bhfId: user?.bhfId || import.meta.env.VITE_VSCU_BHF_ID || '00'
+      tin:import.meta.env.VITE_VSCU_TIN || '',
+      bhfId:import.meta.env.VITE_VSCU_BHF_ID || '00'
     };
     await sendItemComposition(fixedPayload);
     toast.success(`Composition sent for ${payload.itemCd}`);

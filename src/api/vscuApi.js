@@ -17,21 +17,21 @@ const getBasePayload = () => ({
 // INITIALIZATION
 // ============================================
 export const initializeDevice = (data) => {
-  return axiosInstance.post(ENDPOINTS.INITIALIZE, data); // Add to endpoints.js
+  return axiosInstance.post(ENDPOINTS.INITIALIZE, data);
 };
 
 // ============================================
 // BASIC DATA MANAGEMENT
 // ============================================
-export const getCodeList = (lastReqDt = '20200101000000') => {
-  return axiosInstance.post(ENDPOINTS.GET_CODE_LIST, {
+export const getCodeList = (lastReqDt = '20230328000000') => {
+  return axiosInstance.post('/api/data/code/selectCodes', {
     ...getBasePayload(),
     lastReqDt
   });
 };
 
-export const getItemClassifications = (lastReqDt = '20200101000000') => {
-  return axiosInstance.post(ENDPOINTS.GET_ITEM_CLASSIFICATIONS, {
+export const getItemClassifications = (lastReqDt = '20180523000000') => {
+  return axiosInstance.post('/api/data/itemClass/selectItemsClass', {
     ...getBasePayload(),
     lastReqDt
   });
@@ -94,7 +94,12 @@ export const getItem = (itemCd) => {
 };
 
 export const saveItem = (data) => {
-  return axiosInstance.post(ENDPOINTS.SAVE_ITEM, data);
+  const normalized = {
+    ...data,
+    itemCd: data.itemCd || data.item_cd,
+    itemNm: data.itemNm || data.item_name,
+  };
+  return axiosInstance.post(ENDPOINTS.SAVE_ITEM, normalized);
 };
 
 export const deleteItem = (itemCd) => {

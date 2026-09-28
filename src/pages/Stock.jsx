@@ -96,7 +96,6 @@ const Stock = () => {
     setStats({ totalItems, totalStock, lowStock, outOfStock });
   };
 
-  // Fetch stock from VSCU
   const fetchStockFromVSCU = async () => {
     if (!vscuOnline) {
       toast.error('VSCU is offline. Please start VSCU first.');
@@ -105,7 +104,13 @@ const Stock = () => {
 
     setFetchingFromVSCU(true);
     try {
-      const response = await getStockFromVSCU(lastSyncDate || '20200101000000');
+      const payload = {
+        tin: import.meta.env.VITE_VSCU_TIN,
+        bhfId: import.meta.env.VITE_VSCU_BHF_ID,
+        lastReqDt: lastSyncDate || '20200101000000'
+      };
+
+      const response = await axiosInstance.post('/api/stock/selectStockItems', payload);
       
       console.log('Stock VSCU Response:', response.data);
       
@@ -175,7 +180,6 @@ const Stock = () => {
     }
   };
 
-  // Save stock master
   const handleSaveStockMaster = async (itemCd, rsdQty) => {
     if (!vscuOnline) {
       toast.error('VSCU is offline. Cannot save stock master.');
@@ -221,18 +225,23 @@ const Stock = () => {
         type: movementData.type,
         reason: movementData.reason,
         reference: movementData.reference,
+        cashier: 'Admin'
       };
 
-      await saveStockMovement(payload);
+      const response = await saveStockMovement(payload);
       
-      toast.success(`Stock ${movementData.type === 'IN' ? 'added' : 'removed'} successfully!`);
-      setShowMovementForm(false);
-      setMovementData({ itemCd: '', itemName: '', qty: '', type: 'IN', reason: '', reference: '' });
-      fetchStock();
-      fetchStockSyncStatus();
+      if (response.data?.success) {
+        toast.success(`Stock ${movementData.type === 'IN' ? 'added' : 'removed'} successfully!`);
+        setShowMovementForm(false);
+        setMovementData({ itemCd: '', itemName: '', qty: '', type: 'IN', reason: '', reference: '' });
+        fetchStock();
+        fetchStockSyncStatus();
+      } else {
+        toast.error(response.data?.error || 'Failed to update stock');
+      }
     } catch (error) {
       console.error('Movement failed:', error);
-      toast.error('Failed to update stock');
+      toast.error(error.response?.data?.error || 'Failed to update stock');
     } finally {
       setSubmittingMovement(false);
     }
@@ -631,7 +640,7 @@ const Stock = () => {
                               className="text-xs bg-rose-100 text-rose-700 hover:bg-rose-200 px-3 py-1.5 rounded-lg transition font-medium"
                               title="Remove Stock"
                             >
-                              − OUT
+                              - OUT
                             </button>
                             <button
                               onClick={() => handleSaveStockMaster(item.item_cd, item.stock)}
