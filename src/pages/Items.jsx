@@ -623,18 +623,20 @@ const syncItemsFromVSCU = async () => {
     console.log('Syncing items with payload:', payload);
     const response = await getItemInfo(payload);
     
-   if (response.data?.resultCd === '000' && response.data?.data?.itemList) {
-  const vscuItems = response.data.data.itemList;
-      
-      for (const item of vscuItems) {
-        await saveItem(item);
+       if (response.data?.resultCd === '000' && response.data?.data?.itemList) {
+      const vscuItems = response.data.data.itemList;
+
+      if (vscuItems.length > 0) {
+        for (const item of vscuItems) {
+          await saveItem(item);
+        }
+        const now = new Date().toISOString().replace(/[-:T.Z]/g, '').slice(0, 14);
+        await updateSettings({ items_last_sync: now });
+        await fetchItems();
+        toast.success(`Synced ${vscuItems.length} items from VSCU`);
+      } else {
+        toast.info('No new items from VSCU');
       }
-      
-      const now = new Date().toISOString().replace(/[-:T.Z]/g, '').slice(0, 14);
-      await updateSettings({ items_last_sync: now });
-      
-      await fetchItems();
-      toast.success(`Synced ${vscuItems.length} items from VSCU`);
     } else {
       toast.info('No new items from VSCU');
     }
